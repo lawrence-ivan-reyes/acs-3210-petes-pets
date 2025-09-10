@@ -11,3 +11,9 @@
 .card {
     margin-bottom:20px;
 }
+
+.form-group:has(input[required]) label::after,
+.form-group:has(textarea[required]) label::after {
+    content: "*";
+    color: red;
+}
