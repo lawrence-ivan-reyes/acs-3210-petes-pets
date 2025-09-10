@@ -40,17 +40,29 @@ module.exports = (app) => {
   });
 
   // CREATE PET
-  app.post('/pets', (req, res) => {
+  app.post('/pets', upload.single('avatar'), (req, res, next) => {
     var pet = new Pet(req.body);
+    pet.save(function (err) {
+      if (req.file) {
+        // Upload the images
+        client.upload(req.file.path, {}, function (err, versions, meta) {
+          if (err) { return res.status(400).send({ err: err }) };
 
-    pet.save()
-      .then((pet) => {
+          // Pop off the -square and -standard and just use the one URL to grab the image
+          versions.forEach(function (image) {
+            var urlArray = image.url.split('-');
+            urlArray.pop();
+            var url = urlArray.join('-');
+            pet.avatarUrl = url;
+            pet.save();
+          });
+
+          res.send({ pet: pet });
+        });
+      } else {
         res.send({ pet: pet });
-      })
-      .catch((err) => {
-        // STATUS OF 400 FOR VALIDATIONS
-        res.status(400).send(err.errors);
-      }) ;
+      }
+    })
   });
 
   // SHOW PET
