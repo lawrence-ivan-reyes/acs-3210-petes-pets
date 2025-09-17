@@ -37,6 +37,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// Pass Stripe API key to templates
+app.locals.PUBLIC_STRIPE_API_KEY = process.env.PUBLIC_STRIPE_API_KEY
 
 require('./routes/index.js')(app);
 require('./routes/pets.js')(app);
